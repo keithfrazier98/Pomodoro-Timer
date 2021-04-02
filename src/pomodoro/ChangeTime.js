@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react";
 function ChangeTime(
   testid,
   isTimerRunning,
@@ -8,12 +8,11 @@ function ChangeTime(
   setActiveTimeLength,
   setFocusTime
 ) {
-
   if (!isTimerRunning) {
     switch (testid) {
       case "decrease-focus":
         if (focusTime > 5) {
-          setFocusTime((prevState) => (prevState = focusTime - 5))
+          setFocusTime((prevState) => (prevState = focusTime - 5));
         }
         setActiveTimeLength((prevState) => (prevState = focusTime));
 
@@ -41,7 +40,7 @@ function ChangeTime(
         break;
     }
   }
-  return <p>some jsx</p>
+  return <p>some jsx</p>;
 }
 
 export default ChangeTime;

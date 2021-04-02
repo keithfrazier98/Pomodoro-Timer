@@ -4,7 +4,7 @@ import useInterval from "../utils/useInterval";
 import { minutesToDuration, secondsToDuration } from "../utils/duration";
 import HandleState from "./HandleState";
 import ChangeTime from "./ChangeTime";
-import HandleStop from "./HandleStop"
+import HandleStop from "./HandleStop";
 import PlayPause from "./PlayPause";
 
 const hide = {
@@ -16,21 +16,6 @@ const show = {
 
 function Pomodoro() {
   // Timer starts out paused
-
-  const initalSession = {
-    isTimerRunning: false,
-    focusTime: 25,
-    breakTime: 5,
-    displayTimer: "hide",
-    timeSurpassed: 1,
-    totalTime: 25 * 60,
-    secondsLeft: 25 * 60,
-    timeLeft: secondsToDuration(25 * 60),
-    activeTimer: "Focusing",
-    activeTimeLength: 25,
-  };
-  const [sessionData, setSessionData] = useState({ ...initalSession });
-  //console.log(sessionData)
 
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [focusTime, setFocusTime] = useState(25);
@@ -58,19 +43,38 @@ function Pomodoro() {
         timeSurpassed,
         setActiveTimer,
         setActiveTimeLength,
-        setTotalTime,
+        setTotalTime
       );
     },
     isTimerRunning ? 1000 : null
   );
 
   function handleStop() {
-    HandleStop(isTimerRunning, setIsTimerRunning, setActiveTimer, setSecondsLeft,
-      setTimeLeft, setTimeSurpassed, setDisplayTimer, focusTime, secondsLeft, hide)
+    HandleStop(
+      isTimerRunning,
+      setIsTimerRunning,
+      setActiveTimer,
+      setSecondsLeft,
+      setTimeLeft,
+      setTimeSurpassed,
+      setDisplayTimer,
+      focusTime,
+      secondsLeft,
+      hide
+    );
   }
 
   function playPause() {
-   PlayPause(setTotalTime, focusTime, setSecondsLeft, timeSurpassed,setIsTimerRunning, setDisplayTimer, totalTime, show)
+    PlayPause(
+      setTotalTime,
+      focusTime,
+      setSecondsLeft,
+      timeSurpassed,
+      setIsTimerRunning,
+      setDisplayTimer,
+      totalTime,
+      show
+    );
   }
 
   function changeTime({
