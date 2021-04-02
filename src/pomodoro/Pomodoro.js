@@ -2,14 +2,40 @@ import React, { useState } from "react";
 import classNames from "../utils/class-names";
 import useInterval from "../utils/useInterval";
 import { minutesToDuration, secondsToDuration } from "../utils/duration";
-import "./Pomodoro.css";
+import HandleState from "./HandleState";
+import ChangeTime from "./ChangeTime";
+import HandleStop from "./HandleStop"
+import PlayPause from "./PlayPause";
+
+const hide = {
+  display: "none",
+};
+const show = {
+  display: "block",
+};
 
 function Pomodoro() {
   // Timer starts out paused
+
+  const initalSession = {
+    isTimerRunning: false,
+    focusTime: 25,
+    breakTime: 5,
+    displayTimer: "hide",
+    timeSurpassed: 1,
+    totalTime: 25 * 60,
+    secondsLeft: 25 * 60,
+    timeLeft: secondsToDuration(25 * 60),
+    activeTimer: "Focusing",
+    activeTimeLength: 25,
+  };
+  const [sessionData, setSessionData] = useState({ ...initalSession });
+  //console.log(sessionData)
+
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [focusTime, setFocusTime] = useState(25);
   const [breakTime, setBreakTime] = useState(5);
-  const [displayTimer, setDisplayTimer] = useState("hide");
+  const [displayTimer, setDisplayTimer] = useState(hide);
   const [timeSurpassed, setTimeSurpassed] = useState(1);
   const [totalTime, setTotalTime] = useState(focusTime * 60);
   const [secondsLeft, setSecondsLeft] = useState(focusTime * 60);
@@ -20,110 +46,47 @@ function Pomodoro() {
   useInterval(
     // ToDo: Implement what should happen when the timer is running
     () => {
-      if (activeTimer === "Focusing" && secondsLeft > -1) {
-        setTimeSurpassed((prevState) => (prevState = prevState + 1));
-        setSecondsLeft(
-          (prevState) => (prevState = totalTime - timeSurpassed) - 1
-        );
-        setTimeLeft(
-          (prevState) =>
-            (prevState = secondsToDuration(totalTime - timeSurpassed))
-        );
-      } else {
-        if (secondsLeft === -1) {
-          new Audio("https://bigsoundbank.com/UPLOAD/mp3/2349.mp3").play();
-          setActiveTimer("On Break");
-          setActiveTimeLength(breakTime);
-          setTotalTime((prevState) => breakTime * 60);
-          setTimeSurpassed((prevState) => (prevState = 1));
-          setSecondsLeft((prevState) => (prevState = breakTime * 60) - 1);
-        }
-        if (activeTimer === "On Break") {
-          setTimeSurpassed((prevState) => (prevState = prevState + 1));
-          setSecondsLeft(
-            (prevState) => (prevState = totalTime - timeSurpassed) - 1
-          );
-          setTimeLeft(
-            (prevState) =>
-              (prevState = secondsToDuration(totalTime - timeSurpassed))
-          );
-          if (timeSurpassed === totalTime) {
-            new Audio("https://bigsoundbank.com/UPLOAD/mp3/2349.mp3").play();
-            setActiveTimer((prevState) => "Focusing");
-            setSecondsLeft((prevState) => focusTime * 60);
-            setTotalTime((prevState) => focusTime * 60);
-            setTimeSurpassed((prevState) => 1);
-            setActiveTimeLength(focusTime);
-          }
-        }
-      }
-      //console.log(timeLeft);
-      //console.log(secondsLeft);
-      //console.log(timeSurpassed);
-      //console.log(totalTime);
+      HandleState(
+        breakTime,
+        focusTime,
+        activeTimer,
+        secondsLeft,
+        setTimeSurpassed,
+        setSecondsLeft,
+        setTimeLeft,
+        totalTime,
+        timeSurpassed,
+        setActiveTimer,
+        setActiveTimeLength,
+        setTotalTime,
+      );
     },
     isTimerRunning ? 1000 : null
   );
 
   function handleStop() {
-    if (isTimerRunning) {
-      setIsTimerRunning((prevState) => !prevState);
-      setActiveTimer((prevState) => (prevState = "Focusing"));
-      setSecondsLeft((prevState) => focusTime * 60);
-      setTimeLeft((prevState) => secondsToDuration(secondsLeft));
-      setTimeSurpassed((prevState) => (prevState = 0));
-      setDisplayTimer((prevState) => (prevState = "hide"));
-    }
-    //console.log(timeLeft);
-    //console.log(secondsLeft);
-    //console.log(timeSurpassed);
-    //console.log(totalTime);
+    HandleStop(isTimerRunning, setIsTimerRunning, setActiveTimer, setSecondsLeft,
+      setTimeLeft, setTimeSurpassed, setDisplayTimer, focusTime, secondsLeft, hide)
   }
 
   function playPause() {
-    setTotalTime(focusTime * 60);
-    setSecondsLeft((prevState) => (prevState = totalTime - timeSurpassed));
-    setIsTimerRunning((prevState) => !prevState);
-    setDisplayTimer((prevState) => (prevState = "show"));
+   PlayPause(setTotalTime, focusTime, setSecondsLeft, timeSurpassed,setIsTimerRunning, setDisplayTimer, totalTime, show)
   }
+
   function changeTime({
     target: {
       dataset: { testid },
     },
   }) {
-    console.log(testid);
-    if (!isTimerRunning) {
-      switch (testid) {
-        case "decrease-focus":
-          if (focusTime > 5) {
-            setFocusTime(prevState => prevState = focusTime - 5);
-          }
-          setActiveTimeLength(prevState => prevState = focusTime);
-
-          break;
-        case "increase-focus":
-          if (focusTime < 60) {
-            setFocusTime(prevState => prevState = focusTime + 5);
-          }
-          setActiveTimeLength(prevState => prevState = focusTime);
-
-          break;
-        case "decrease-break":
-          if (breakTime > 1) {
-            setBreakTime(prevState => prevState = breakTime - 1);
-          }
-          setActiveTimeLength(prevState => prevState = breakTime);
-
-          break;
-        case "increase-break":
-          if (breakTime < 15) {
-            setBreakTime(prevState => prevState = breakTime + 1);
-          }
-          setActiveTimeLength(prevState => prevState = breakTime);
-
-          break;
-      }
-    }
+    ChangeTime(
+      testid,
+      isTimerRunning,
+      focusTime,
+      breakTime,
+      setBreakTime,
+      setActiveTimeLength,
+      setFocusTime
+    );
   }
 
   return (
@@ -222,7 +185,7 @@ function Pomodoro() {
           </div>
         </div>
       </div>
-      <div className={displayTimer}>
+      <div style={displayTimer}>
         {/* TODO: This area should show only when a focus or break session is running or pauses */}
         <div className="row mb-2">
           <div className="col">
@@ -244,7 +207,7 @@ function Pomodoro() {
                 role="progressbar"
                 aria-valuemin="0"
                 aria-valuemax="100"
-                aria-valuenow={timeSurpassed -1} // TODO: Increase aria-valuenow as elapsed time increases
+                aria-valuenow={Math.trunc((timeSurpassed / totalTime) * 100)} // TODO: Increase aria-valuenow as elapsed time increases
                 style={{
                   width: `${((timeSurpassed / totalTime) * 100).toString()}%`,
                 }} // TODO: Increase width % as elapsed time increases
