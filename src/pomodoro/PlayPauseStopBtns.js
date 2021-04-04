@@ -30,7 +30,7 @@ function PlayPauseStopBtns({
       setIsTimerRunning((prevState) => !prevState);
       setActiveTimer((prevState) => (prevState = "Focusing"));
       setTimeLeft((prevState) => prevState = minutesToDuration(focusTime));
-      setTimeSurpassed((prevState) => (prevState = 0));
+      setTimeSurpassed((prevState) => (prevState = 1));
       setDisplayTimer((prevState) => (prevState = hide));
       setSecondsLeft((prevState) => prevState = focusTime * 60);
     }
