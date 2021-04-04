@@ -1,4 +1,3 @@
-import React from "react";
 import { minutesToDuration, secondsToDuration } from "../utils/duration/index";
 
 function HandleState(
@@ -42,11 +41,11 @@ function HandleState(
       );
       if (timeSurpassed === totalTime) {
         new Audio("https://bigsoundbank.com/UPLOAD/mp3/2349.mp3").play();
-        setActiveTimer((prevState) => "Focusing");
-        setSecondsLeft((prevState) => focusTime * 60);
-        setTotalTime((prevState) => focusTime * 60);
-        setTimeSurpassed((prevState) => 1);
-        setActiveTimeLength(focusTime);
+        setActiveTimer((prevState) => (prevState = "Focusing"));
+        setSecondsLeft((prevState) => (prevState = focusTime * 60));
+        setTotalTime((prevState) => (prevState = focusTime * 60));
+        setTimeSurpassed((prevState) => (prevState = 1));
+        setActiveTimeLength((prevState) => (prevState = focusTime));
       }
     }
   }

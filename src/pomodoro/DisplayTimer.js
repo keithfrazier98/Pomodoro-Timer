@@ -1,7 +1,15 @@
 import React from "react";
-import {minutesToDuration} from "../utils/duration/index"
+import { minutesToDuration } from "../utils/duration/index";
 
-function DisplayTimer({displayTimer,activeTimeLength, activeTimer, timeLeft,timeSurpassed,totalTime}) {
+function DisplayTimer({
+  displayTimer,
+  activeTimeLength,
+  activeTimer,
+  timeLeft,
+  timeSurpassed,
+  totalTime,
+}) {
+
   return (
     <div style={displayTimer}>
       {/* TODO: This area should show only when a focus or break session is running or pauses */}
@@ -37,4 +45,4 @@ function DisplayTimer({displayTimer,activeTimeLength, activeTimer, timeLeft,time
   );
 }
 
-export default DisplayTimer
+export default DisplayTimer;
