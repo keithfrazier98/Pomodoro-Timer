@@ -10,7 +10,6 @@ function App() {
       </header>
       <div className="container">
         <Pomodoro />
-        {}
       </div>
     </div>
   );
