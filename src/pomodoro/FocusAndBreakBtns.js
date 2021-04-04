@@ -9,8 +9,6 @@ function FocusAndBreakBtns({
   setActiveTimeLength,
   setFocusTime,
   setTimeLeft,
-  totalTime,
-  timeSurpassed,
 }) {
   function changeTime({
     target: {
