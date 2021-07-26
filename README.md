@@ -13,5 +13,5 @@ Timer application to increase personal productivity by using work and break sess
 
 ### Run on local machine:
 
-1. fork and clone git repsoitory on local machine
+1. fork and clone git repository on local machine
 2. use terminal to run ```npm run start```
