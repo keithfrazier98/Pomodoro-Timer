@@ -1,59 +1,45 @@
 import React from "react";
 import { minutesToDuration } from "../utils/duration/index";
+// import { oneMin } from "./Pomodoro";
+
+const minMs = 300000;
+const maxMsFocus = 300000 * 5;
+const maxMsBreak = 300000 * 3;
+const fiveMin = 60000 * 5;
 
 function FocusAndBreakBtns({
   focusTime,
-  breakTime,
-  isTimerRunning,
-  setBreakTime,
-  setActiveTimeLength,
   setFocusTime,
-  setTimeLeft,
+  breakTime,
+  setBreakTime,
+  timerRunning,
 }) {
   function changeTime({
     target: {
       dataset: { testid },
     },
   }) {
-    if (!isTimerRunning) {
+    if (!!!timerRunning) {
       switch (testid) {
         case "decrease-focus":
-          if (focusTime > 5) {
-            setFocusTime((prevState) => (prevState = focusTime - 5));
-            setActiveTimeLength((prevState) => (prevState = focusTime - 5));
-            setTimeLeft((prevState) => (prevState = minutesToDuration(focusTime - 5)))
+          if (focusTime > minMs) {
+            setFocusTime(focusTime - fiveMin);
           }
-
           break;
-
         case "increase-focus":
-          if (focusTime < 60) {
-            setFocusTime((prevState) => (prevState = focusTime + 5));
-            setActiveTimeLength((prevState) => (prevState = focusTime + 5));
-            setTimeLeft((prevState) => (prevState = minutesToDuration(focusTime + 5)))
-
+          if (focusTime < maxMsFocus) {
+            setFocusTime(focusTime + fiveMin);
           }
-
           break;
-
         case "decrease-break":
-          if (breakTime > 1) {
-            setBreakTime((prevState) => (prevState = breakTime - 1));
-            setActiveTimeLength((prevState) => (prevState = breakTime - 1));
-            setTimeLeft((prevState) => (prevState = minutesToDuration(focusTime - 1)))
-
+          if (breakTime > minMs) {
+            setBreakTime(breakTime - fiveMin);
           }
-
           break;
-
         case "increase-break":
-          if (breakTime < 15) {
-            setBreakTime((prevState) => (prevState = breakTime + 1));
-            setActiveTimeLength((prevState) => (prevState = breakTime + 1));
-            setTimeLeft((prevState) => (prevState = minutesToDuration(focusTime + 1)))
-
+          if (breakTime < maxMsBreak) {
+            setBreakTime(breakTime + fiveMin);
           }
-
           break;
       }
     }
@@ -65,7 +51,7 @@ function FocusAndBreakBtns({
         <div className="input-group input-group-lg mb-2">
           <span className="input-group-text" data-testid="duration-focus">
             {/* TODO: Update this text to display the current focus session duration */}
-            Focus Duration: {minutesToDuration(focusTime)}
+            Focus Duration: {minutesToDuration(focusTime / 60000)}
           </span>
           <div className="input-group-append">
             {/* TODO: Implement decreasing focus duration and disable during a focus or break session */}
@@ -94,7 +80,7 @@ function FocusAndBreakBtns({
           <div className="input-group input-group-lg mb-2">
             <span className="input-group-text" data-testid="duration-break">
               {/* TODO: Update this text to display the current break session duration */}
-              Break Duration: {minutesToDuration(breakTime)}
+              Break Duration: {minutesToDuration(breakTime / 60000)}
             </span>
             <div className="input-group-append">
               {/* TODO: Implement decreasing break duration and disable during a focus or break session*/}

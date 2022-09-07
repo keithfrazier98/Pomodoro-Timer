@@ -5,6 +5,8 @@ Timer application to increase personal productivity by using work and break sess
 >Read more about the pomodoro technique:
 >https://en.wikipedia.org/wiki/Pomodoro_Technique
 
+>Live App: https://pomodoro-timer-keithfrazier98.vercel.app/
+
 ## frontend stack 
   - react
   - css

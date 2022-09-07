@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import useInterval from "../utils/useInterval";
-import { secondsToDuration } from "../utils/duration";
-import HandleState from "./HandleState";
+import { minutesToDuration, secondsToDuration } from "../utils/duration";
 import FocusAndBreakBtns from "./FocusAndBreakBtns";
 import PlayPauseStopBtns from "./PlayPauseStopBtns";
 import DisplayTimer from "./DisplayTimer";
@@ -13,83 +12,72 @@ const show = {
   display: "block",
 };
 
+export const oneMin = 30000;
+
 function Pomodoro() {
   // Timer starts out paused
+  const [focusTime, setFocusTime] = useState(300000 * 5);
+  const [breakTime, setBreakTime] = useState(300000);
 
-  const [isTimerRunning, setIsTimerRunning] = useState(false);
-  const [focusTime, setFocusTime] = useState(25);
-  const [breakTime, setBreakTime] = useState(5);
-  const [displayTimer, setDisplayTimer] = useState(hide);
-  const [timeSurpassed, setTimeSurpassed] = useState(1);
-  const [totalTime, setTotalTime] = useState(focusTime * 60);
-  const [secondsLeft, setSecondsLeft] = useState(focusTime * 60);
-  const [timeLeft, setTimeLeft] = useState(secondsToDuration(secondsLeft));
-  const [activeTimer, setActiveTimer] = useState("Focusing");
-  const [activeTimeLength, setActiveTimeLength] = useState(focusTime);
+  // set to `focusing` / `breaking` / `paused` / false
+  const [timerRunning, setTimerRunning] = useState(false);
 
-  useInterval(
-    // ToDo: Implement what should happen when the timer is running
-    () => {
-      HandleState(
-        breakTime,
-        focusTime,
-        activeTimer,
-        secondsLeft,
-        setTimeSurpassed,
-        setSecondsLeft,
-        setTimeLeft,
-        totalTime,
-        timeSurpassed,
-        setActiveTimer,
-        setActiveTimeLength,
-        setTotalTime
-      );
-    },
-    isTimerRunning ? 1000 : null
-  );
+  const [totalMs, setTotalMs] = useState(focusTime);
+  const [msPassed, setMsPassed] = useState(0);
+
+  useInterval(() => {
+    console.log("Interval is running");
+    if (!!timerRunning && timerRunning !== "paused") {
+      if (msPassed === totalMs) {
+        setTimerRunning(timerRunning === "breaking" ? "focusing" : "breaking");
+        // https://bigsoundbank.com/UPLOAD/wav/2632.wav
+        new Audio("https://bigsoundbank.com/UPLOAD/wav/0292.wav").play();
+      }
+      setMsPassed(msPassed + 1000);
+    }
+  }, 1000);
+
+  useEffect(() => {
+    if (timerRunning !== "paused") {
+      switch (timerRunning) {
+        case "focusing":
+          setTotalMs(focusTime);
+          break;
+        case "breaking":
+          setTotalMs(breakTime);
+          break;
+        case false:
+          setTotalMs(focusTime)
+          setMsPassed(0)
+          break;
+        default:
+          throw new Error("Invalid timerRunning value: ", timerRunning);
+      }
+    }
+  }, [timerRunning]);
 
   return (
     <div className="pomodoro">
       {/*call FocusAndBreakBtns with props*/}
       <FocusAndBreakBtns
         focusTime={focusTime}
-        breakTime={breakTime}
-        isTimerRunning={isTimerRunning}
-        setBreakTime={setBreakTime}
-        setActiveTimeLength={setActiveTimeLength}
         setFocusTime={setFocusTime}
-        setActiveTimer={setActiveTimer}
-        setTimeLeft = {setTimeLeft}
-        totalTime = {totalTime}
-        timeSurpassed = {timeSurpassed}
+        breakTime={breakTime}
+        setBreakTime={setBreakTime}
+        timerRunning={timerRunning}
       />
       <div className="row">
         {/*call PlayPauseBtns component with props*/}
         <PlayPauseStopBtns
-          isTimerRunning={isTimerRunning}
-          setTotalTime={setTotalTime}
-          focusTime={focusTime}
-          setSecondsLeft={setSecondsLeft}
-          timeSurpassed={timeSurpassed}
-          setIsTimerRunning={setIsTimerRunning}
-          setDisplayTimer={setDisplayTimer}
-          totalTime={totalTime}
-          show={show}
-          setActiveTimer={setActiveTimer}
-          setTimeLeft={setTimeLeft}
-          setTimeSurpassed={setTimeSurpassed}
-          secondsLeft={secondsLeft}
-          hide={hide}
+          timerRunning={timerRunning}
+          setTimerRunning={setTimerRunning}
         />
       </div>
       {/* call DisplayTimer component with props */}
       <DisplayTimer
-        displayTimer={displayTimer}
-        activeTimeLength={activeTimeLength}
-        activeTimer={activeTimer}
-        timeLeft={timeLeft}
-        timeSurpassed={timeSurpassed}
-        totalTime={totalTime}
+        msPassed={msPassed}
+        totalMs={totalMs}
+        timerRunning={timerRunning}
       />
     </div>
   );

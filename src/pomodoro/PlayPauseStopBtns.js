@@ -1,39 +1,31 @@
-import React from "react";
+import React, { useRef } from "react";
 import classNames from "../utils/class-names";
-import { minutesToDuration } from "../utils/duration";
 
-function PlayPauseStopBtns({
-  isTimerRunning,
-  setTotalTime,
-  focusTime,
-  setSecondsLeft,
-  timeSurpassed,
-  setIsTimerRunning,
-  setDisplayTimer,
-  totalTime,
-  show,
-  setActiveTimer,
-  setTimeLeft,
-  setTimeSurpassed,
-  secondsLeft,
-  hide,
-}) {
+function PlayPauseStopBtns({ timerRunning, setTimerRunning }) {
+  const lastTimerRunning = useRef(timerRunning);
   function playPauseHandler() {
-      setTotalTime(focusTime * 60);
-      setSecondsLeft((prevState) => (prevState = totalTime - timeSurpassed));
-      setIsTimerRunning((prevState) => !prevState);
-      setDisplayTimer((prevState) => (prevState = show));
+    switch (timerRunning) {
+      case false:
+        console.log("Starting timer");
+        setTimerRunning("focusing");
+        lastTimerRunning.current = "focusing";
+        break;
+      case "focusing":
+      case "breaking":
+        lastTimerRunning.current = timerRunning;
+        setTimerRunning("paused");
+        break;
+      case "pause":
+        setTimerRunning(lastTimerRunning.current);
+      default:
+        throw new Error("Inavlid timerRunning value: ", timerRunning);
+        break;
+    }
   }
 
   function stopHandler() {
-    if (isTimerRunning) {
-      setIsTimerRunning((prevState) => !prevState);
-      setActiveTimer((prevState) => (prevState = "Focusing"));
-      setTimeLeft((prevState) => prevState = minutesToDuration(focusTime));
-      setTimeSurpassed((prevState) => (prevState = 1));
-      setDisplayTimer((prevState) => (prevState = hide));
-      setSecondsLeft((prevState) => prevState = focusTime * 60);
-    }
+    setTimerRunning(false);
+    
   }
 
   return (
@@ -53,8 +45,8 @@ function PlayPauseStopBtns({
           <span
             className={classNames({
               oi: true,
-              "oi-media-play": !isTimerRunning,
-              "oi-media-pause": isTimerRunning,
+              "oi-media-play": timerRunning === "paused",
+              "oi-media-pause": timerRunning !== "paused",
             })}
           />
         </button>
